@@ -2,6 +2,46 @@
 - name: install required packages
   package:
     state: present
-    name:
-      - apache2
+    name: apache2
+
+- name: apache is configured
+  copy:
+    src: apache2.conf
+    dest: /etc/apache2/apache2.conf
+  notify: apache2 reload
+
+- name: default website is removed
+  file:
+    state: absent
+    path: "{{ item }}"
+  notify: apache2 reload
+  loop:
+    - /var/www/html/index.html
+    - /etc/apache2/sites-enabled/000-default.conf
+
+- name: website src is installed
+  copy:
+    src: index.html
+    dest: "/var/www/html/{{ domain }}/"
+    group: www-data
+    owner: www-data
+    mode: 0500
+
+- name: ssl apache module is enabled
+  apache2_module:
+    state: present
+    name: ssl
+  notify: apache2 restart
+
+- name: "{{ domain }} is configured"
+  template:
+    src: ssl.conf
+    dest: "/etc/apache2/sites-available/{{ domain }}.conf"
+  notify: apache2 reload
+
+- name: "{{ domain }} is enabled"
+  command:
+    cmd: "a2ensite {{ domain }}.conf"
+    creates: "/etc/apache2/sites-enabled/{{ domain }}.conf"
+  notify: apache2 reload
 ...
