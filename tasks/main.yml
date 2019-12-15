@@ -2,7 +2,7 @@
 - name: install required packages
   package:
     state: present
-    name: apache2
+    name: "apache2={{ version }}*"
 
 - name: apache is configured
   copy:
