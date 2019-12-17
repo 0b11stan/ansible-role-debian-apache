@@ -30,7 +30,10 @@
 - name: ssl apache module is enabled
   apache2_module:
     state: present
-    name: ssl
+    name: "{{ item }}"
+  loop:
+    - ssl
+    - socache_shmcb
   notify: apache2 restart
 
 - name: "{{ domain }} is configured"
