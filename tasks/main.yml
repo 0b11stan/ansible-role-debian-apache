@@ -47,4 +47,9 @@
     cmd: "a2ensite {{ domain }}.conf"
     creates: "/etc/apache2/sites-enabled/{{ domain }}.conf"
   notify: apache2 reload
+
+- name: "CRL is enabled"
+  file:
+    state: directory
+    path: /etc/crl
 ...
